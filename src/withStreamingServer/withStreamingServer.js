@@ -252,6 +252,10 @@ function withStreamingServer(Video) {
                                     commandArgs.maxAudioChannels
                                     :
                                     mediaCapabilities.maxAudioChannels;
+                                var maxWidth = commandArgs.maxWidth !== null && isFinite(commandArgs.maxWidth) ?
+                                    commandArgs.maxWidth
+                                    :
+                                    null;
                                 var canPlayStreamOptions = Object.assign({}, commandArgs, {
                                     formats: formats,
                                     videoCodecs: videoCodecs,
@@ -278,7 +282,7 @@ function withStreamingServer(Video) {
 
                                         var id = hat();
                                         var queryParams = new URLSearchParams([['mediaURL', mediaURL]]);
-                                        if (commandArgs.forceTranscoding) {
+                                        if (commandArgs.forceTranscoding || commandArgs.forceTranscodingOnFallback) {
                                             queryParams.set('forceTranscoding', '1');
                                         }
 
@@ -291,6 +295,9 @@ function withStreamingServer(Video) {
                                         });
 
                                         queryParams.set('maxAudioChannels', maxAudioChannels);
+                                        if (maxWidth !== null) {
+                                            queryParams.set('maxWidth', maxWidth);
+                                        }
 
                                         var probePromise = playability.probe !== null ?
                                             Promise.resolve(playability.probe)
